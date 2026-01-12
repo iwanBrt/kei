@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Girl of The Moment</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Quicksand:wght@300;400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* CSS Variables */
+        :root {
+            --bg-color: #FFFAF0;
+            /* Warm White/Cream */
+            --accent-color: #CD919E;
+            /* Dusty Rose */
+            --text-color: #4A4A4A;
+            /* Dark Grey */
+            --white: #ffffff;
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --shadow-dreamy: 0 20px 40px rgba(205, 145, 158, 0.15);
+        }
+
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Lato', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Grainy Overlay - Film Look */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.07'/%3E%3C/svg%3E");
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        /* Cursor Sparkle */
+        .cursor-sparkle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #CD919E;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 1s ease-out, opacity 1s ease-out;
+        }
+
+        /* Floating Decorations */
+        .deco-bow {
+            position: absolute;
+            width: 40px;
+            opacity: 0.8;
+            fill: var(--accent-color);
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .deco-sparkle {
+            position: absolute;
+            width: 24px;
+            fill: #D4AF37;
+            /* Gold-ish for sparkle */
+            opacity: 0.6;
+            animation: twinkle 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Decorations on frames */
+        .tape-deco {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 30px;
+            background: rgba(220, 220, 220, 0.4);
+            /* Washi tape look */
+            transform-origin: center;
+            z-index: 20;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .corner-bow {
+            position: absolute;
+            width: 50px;
+            top: -25px;
+            left: -25px;
+            fill: var(--accent-color);
+            z-index: 20;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+            transform: rotate(-15deg);
+        }
+
+        .decorated-frame {
+            position: relative;
+        }
+
+        .frame-bow {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            fill: var(--accent-color);
+            z-index: 20;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1));
+        }
+
+        /* Caption Text */
+        .caption {
+            font-family: 'Quicksand', sans-serif;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #777;
+            letter-spacing: 0.5px;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .hero-frame {
+            width: 280px;
+            height: 380px;
+            border-radius: 140px 140px 20px 20px;
+            /* Arch Shape */
+            overflow: hidden;
+            border: 4px solid var(--white);
+            box-shadow: var(--shadow-dreamy);
+            margin-bottom: 2rem;
+            position: relative;
+            transform: scale(0.9);
+            opacity: 0;
+            animation: appear 1.2s ease-out forwards 0.5s;
+        }
+
+        .hero-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: appear 1.2s ease-out forwards 1s;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.6;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes appear {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Shake Animation */
+        @keyframes gentle-shake {
+            0% {
+                transform: rotate(-1deg);
+            }
+
+            50% {
+                transform: rotate(1deg);
+            }
+
+            100% {
+                transform: rotate(-1deg);
+            }
+        }
+
+        /* Polaroid Grid Section */
+        .gallery {
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            /* Slightly smaller min width */
+            gap: 3rem;
+            padding: 2rem 0;
+        }
+
+        .polaroid {
+            background: var(--white);
+            padding: 15px 15px 40px 15px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+            position: relative;
+            border-radius: 2px;
+            animation: gentle-shake 3s ease-in-out infinite alternate;
+        }
+
+        /* Randomize animation delay slightly */
+        .polaroid:nth-child(odd) {
+            animation-delay: 0.5s;
+        }
+
+        .polaroid:nth-child(2) {
+            animation-delay: 1.2s;
+        }
+
+        .polaroid:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .polaroid img {
+            width: 100%;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            filter: sepia(10%);
+        }
+
+        .polaroid:hover {
+            transform: scale(1.02) translateY(-5px) !important;
+            /* Override animation transform temporarily */
+            box-shadow: var(--shadow-dreamy);
+            z-index: 10;
+            animation-play-state: paused;
+        }
+
+        /* Staggered Layout using Margin instead of Transform */
+        .grid-container .polaroid:nth-child(even) {
+            margin-top: 30px;
+        }
+
+        .grid-container .polaroid:nth-child(even):hover {
+            margin-top: 25px;
+            /* Adjust margin on hover to simulate lift if needed, or keep logic simple */
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                padding: 2rem 1rem;
+            }
+
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                /* Force 2 columns */
+                gap: 15px;
+            }
+
+            .polaroid {
+                padding: 8px 8px 30px 8px;
+                /* Compact padding */
+            }
+
+            .caption {
+                font-size: 0.7rem;
+                margin-top: 10px;
+            }
+
+            /* Adjust stagger for mobile if needed, or keep it */
+            .grid-container .polaroid:nth-child(even) {
+                margin-top: 20px;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* "Why You" Section */
+        .why-you {
+            background-color: var(--accent-color);
+            color: var(--white);
+            padding: 6rem 2rem;
+            text-align: center;
+            margin: 4rem 0;
+            position: relative;
+        }
+
+        .why-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .adjectives {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .adj-item span {
+            display: block;
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+
+        .adj-item p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-family: 'Quicksand', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* Footer & Interactive Letter */
+        footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .envelope-container {
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .envelope-container:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .envelope-icon {
+            width: 60px;
+            height: 60px;
+            fill: var(--accent-color);
+        }
+
+        .click-hint {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            letter-spacing: 1px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 250, 240, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .letter-paper {
+            background: var(--white);
+            width: 90%;
+            max-width: 500px;
+            padding: 3rem;
+            border: 1px solid rgba(205, 145, 158, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transform: translateY(50px) scale(0.9);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active .letter-paper {
+            transform: translateY(0) scale(1);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--accent-color);
+        }
+
+        .letter-content h3 {
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .letter-content p {
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: #666;
+        }
+
+        /* Simple Audio Control */
+        .audio-control {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 500;
+            opacity: 0.3;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .audio-control:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Audio Autoplay -->
+    <audio id="bgMusic" loop>
+        <source src="sempurna.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <div class="audio-control" onclick="toggleMusic()">🎵</div>
+
+    <!-- SVGs for Decoration -->
+    <svg style="display: none;">
+        <symbol id="icon-sparkle" viewBox="0 0 24 24">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+        </symbol>
+        <symbol id="icon-bow" viewBox="0 0 24 24">
+            <path d="M12 14c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3s-3 1.34-3 3v5c0 1.66 1.34 3 3 3z" />
+            <path d="M12 14c-1.66 0-3-1.34-3-3l-2 8 5-2 5 2-2-8c0 1.66-1.34 3-3 3z" />
+        </symbol>
+        <symbol id="icon-heart" viewBox="0 0 24 24">
+            <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </symbol>
+        <symbol id="icon-envelope" viewBox="0 0 24 24">
+            <path
+                d="M20,4H4C2.9,4,2,4.9,2,6v12c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V6C22,4.9,21.1,4,20,4z M20,8l-8,5L4,8V6l8,5l8-5V8z" />
+        </symbol>
+    </svg>
+
+    <!-- Floating Sparkles -->
+    <svg class="deco-sparkle" style="top: 15%; left: 10%; animation-delay: 0s;">
+        <use href="#icon-sparkle" />
+    </svg>
+    <svg class="deco-sparkle" style="top: 45%; right: 15%; animation-delay: 2s;">
+        <use href="#icon-sparkle" />
+    </svg>
+    <svg class="deco-sparkle" style="top: 85%; left: 5%; animation-delay: 1.5s;">
+        <use href="#icon-sparkle" />
+    </svg>
+
+    <!-- Floating Bows -->
+    <svg class="deco-bow" style="top: 5%; right: 5%; transform: rotate(15deg);">
+        <use href="#icon-bow" />
+    </svg>
+    <svg class="deco-bow" style="top: 60%; left: -10px; transform: rotate(-15deg);">
+        <use href="#icon-bow" />
+    </svg>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-frame decorated-frame">
+            <!-- Gunakan foto tercantik buat cover, misalnya no 6 -->
+            <img src="assets/5.jpeg" alt="The Beautiful You">
+            <div class="frame-bow">
+                <svg viewBox="0 0 24 24" style="width:100%; height:100%;">
+                    <use href="#icon-bow" />
+                </svg>
+            </div>
+        </div>
+        <h1 class="hero-title italic">The Girl of The Moment</h1>
+        <p style="margin-top: 10px; font-family: 'Quicksand', sans-serif; opacity: 0.8; letter-spacing: 2px;">PERFECT IN
+            EVERY WAY</p>
+        <div class="scroll-indicator">Scroll Slowly</div>
+    </section>
+
+    <!-- Intro Text -->
+    <section style="text-align: center; max-width: 600px; margin: 0 auto; padding: 2rem;">
+        <h2 style="font-size: 1.5rem; color: var(--accent-color); margin-bottom: 1rem;" class="italic">My Favorite View
+        </h2>
+        <!-- Added ID for Typewriter Effect -->
+        <p id="intro-text" style="line-height: 1.8; color: #666; min-height: 100px;">
+            <!-- Text will be inserted by JS -->
+        </p>
+    </section>
+
+    <!-- Polaroid Grid -->
+    <section class="gallery">
+        <div class="grid-container">
+            <!-- Foto 1 -->
+            <div class="polaroid">
+                <div class="tape-deco" style="transform: translateX(-50%) rotate(-2deg);"></div>
+                <img src="assets/1.jpeg" alt="Sweet Memory 1">
+                <div class="caption">The smile that lights up my world</div>
+            </div>
+            <!-- Foto 2 -->
+            <div class="polaroid">
+                <div class="tape-deco"
+                    style="background: rgba(205, 145, 158, 0.4); transform: translateX(-50%) rotate(2deg);"></div>
+                <img src="assets/2.jpeg" alt="Sweet Memory 2">
+                <div class="caption">Effortlessly beautiful</div>
+            </div>
+            <!-- Foto 3 -->
+            <div class="polaroid">
+                <svg class="corner-bow">
+                    <use href="#icon-bow" />
+                </svg>
+                <img src="assets/3.jpeg" alt="Sweet Memory 3">
+                <div class="caption">My happy pill</div>
+            </div>
+            <!-- Foto 4 -->
+            <div class="polaroid">
+                <div class="tape-deco" style="transform: translateX(-50%) rotate(1deg);"></div>
+                <img src="assets/4.jpeg" alt="Sweet Memory 4">
+                <div class="caption">Just perfect</div>
+            </div>
+            <!-- Foto 5 -->
+            <div class="polaroid">
+                <div class="tape-deco"
+                    style="background: rgba(205, 145, 158, 0.4); transform: translateX(-50%) rotate(-3deg);"></div>
+                <img src="assets/5.jpeg" alt="Sweet Memory 5">
+                <div class="caption">Cant take my eyes off you</div>
+            </div>
+            <!-- Foto 6 -->
+            <div class="polaroid">
+                <svg class="corner-bow" style="left: auto; right: -15px; transform: rotate(15deg);">
+                    <use href="#icon-bow" />
+                </svg>
+                <img src="assets/6.jpeg" alt="Sweet Memory 6">
+                <div class="caption">Core memory unlocked</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why You Section -->
+    <section class="why-you">
+        <div class="why-content">
+            <h2 style="font-size: 2.2rem; margin-bottom: 2rem;" class="italic">Things I Adore</h2>
+            <div class="adjectives">
+                <div class="adj-item">
+                    <svg style="width: 30px; fill: white; margin-bottom:10px;">
+                        <use href="#icon-heart" />
+                    </svg>
+                    <span>Your Smile</span>
+                    <p>Yang selalu bikin tenang</p>
+                </div>
+                <div class="adj-item">
+                    <svg style="width: 30px; fill: white; margin-bottom:10px;">
+                        <use href="#icon-heart" />
+                    </svg>
+                    <span>Your Laugh</span>
+                    <p>Suara favoritku</p>
+                </div>
+                <div class="adj-item">
+                    <svg style="width: 30px; fill: white; margin-bottom:10px;">
+                        <use href="#icon-heart" />
+                    </svg>
+                    <span>Your Soul</span>
+                    <p>Tulus dan hangat</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 4rem; font-family: 'Playfair Display', serif; font-size: 1.2rem; opacity: 0.9;">
+                "In a room full of art, I'd still stare at you."
+            </div>
+
+            <!-- SVG Bow Decoration on Section -->
+            <svg class="deco-bow s-bow" style="bottom: -20px; right: 20%; width: 60px; fill: rgba(255,255,255,0.2);">
+                <use href="#icon-bow" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- Footer Envelope -->
+    <footer>
+        <div class="envelope-container" onclick="openLetter()">
+            <svg class="envelope-icon">
+                <use href="#icon-envelope" />
+            </svg>
+            <div class="click-hint">Click to open my heart</div>
+        </div>
+        <p style="margin-top: 3rem; font-size: 0.7rem; color: #999;">Made with all my heart for Kei</p>
+    </footer>
+
+    <!-- Modal Letter -->
+    <div class="modal-overlay" id="letterModal">
+        <div class="letter-paper">
+            <span class="close-modal" onclick="closeLetter()">&times;</span>
+            <div class="letter-content">
+                <h3 class="italic">for you my special person,</h3>
+                <p>
+                    Hai kamu! Website kecil ini mungkin nggak seberapa dibandingin sama kehadiran kamu di hidup aku,
+                    tapi aku bikin ini biar kamu inget kalau kamu itu spesial banget.
+                </p>
+                <p>
+                    Makasih ya udah jadi kamu. Makasih udah selalu ada, makasih buat senyum kamu yang nular, dan makasih
+                    udah ngasih warna pink lucu di hari-hariku yang kadang abu-abu.
+                </p>
+                <p>
+                    I hope you like this little surprise. Don't forget that you are loved, today and always.
+                </p>
+                <p
+                    style="text-align: right; margin-top: 3rem; font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-color);">
+                    Love you tons,<br>
+                    <span style="font-size: 1.2rem;">I</span>
+                </p>
+                <!-- Add a decorative heart at the bottom of letter -->
+                <div style="text-align: center; margin-top: 2rem;">
+                    <svg style="width: 24px; fill: var(--accent-color); opacity: 0.5;">
+                        <use href="#icon-heart" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script>
+        const modal = document.getElementById('letterModal');
+        const bgMusic = document.getElementById('bgMusic');
+        let isMusicPlaying = false;
+
+        function openLetter() {
+            modal.classList.add('active');
+
+            // Try to enable music on interaction if not playing
+            if (!isMusicPlaying && bgMusic.paused) {
+                playMusic();
+            }
+        }
+
+        function closeLetter() {
+            modal.classList.remove('active');
+        }
+
+        function playMusic() {
+            bgMusic.play().then(() => {
+                isMusicPlaying = true;
+            }).catch(error => {
+                console.log("Audio autoplay blocked, needs interaction first");
+            });
+        }
+
+        function toggleMusic() {
+            if (bgMusic.paused) {
+                bgMusic.play();
+            } else {
+                bgMusic.pause();
+            }
+        }
+
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeLetter();
+            }
+        });
+
+        // Typewriter Effect Data
+        const introTextContent = "Dari sekian banyak skenario hidup, aku bersyukur banget Tuhan nulis nama kamu di cerita aku. Kamu itu definisi keindahan yang tetap terasa dekat meski jarak memisahkan. Makasih udah ada di dunia ini ya. Belum ketemu langsung aja udah sebahagia ini rasanya, apalagi nanti.";
+        const introElement = document.getElementById('intro-text');
+        let i = 0;
+
+        // Function to type text
+        function typeWriter() {
+            if (i < introTextContent.length) {
+                introElement.innerHTML += introTextContent.charAt(i);
+                i++;
+                setTimeout(typeWriter, 40); // Speed of typing
+            }
+        }
+
+        // Intersection Observer to start typing when scrolled into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && i === 0) {
+                    typeWriter();
+                }
+            });
+        });
+        observer.observe(introElement);
+
+
+        // Fairy Dust Cursor Effect
+        document.addEventListener('mousemove', function (e) {
+            createSparkle(e.clientX, e.clientY);
+        });
+
+        // Also for touch devices basic support
+        document.addEventListener('touchmove', function (e) {
+            createSparkle(e.touches[0].clientX, e.touches[0].clientY);
+        });
+
+        function createSparkle(x, y) {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('cursor-sparkle');
+            document.body.appendChild(sparkle);
+
+            // Randomize position slightly around cursor
+            const destinationX = x + (Math.random() - 0.5) * 20;
+            const destinationY = y + (Math.random() - 0.5) * 20;
+
+            sparkle.style.left = destinationX + 'px';
+            sparkle.style.top = destinationY + 'px';
+
+            // Random hue for subtle color variation (Pink to Gold)
+            const randomColor = Math.random() > 0.5 ? '#CD919E' : '#D4AF37';
+            sparkle.style.background = randomColor;
+
+            // Animate and remove
+            setTimeout(() => {
+                sparkle.style.transform = `translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 + 20}px)`;
+                sparkle.style.opacity = 0;
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 1000);
+            }, 10);
+        }
+
+        // Attempt autoplay on load (modern browsers often block this)
+        window.addEventListener('load', () => {
+            // Kita coba play pelan-pelan
+            bgMusic.volume = 0.5;
+            playMusic();
+
+            // Trick: Add a one-time click listener to body to start music if blocked
+            document.body.addEventListener('click', function () {
+                if (!isMusicPlaying) playMusic();
+            }, { once: true });
+        });
+    </script>
+</body>
+
+</html>
