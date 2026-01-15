@@ -463,6 +463,23 @@
             position: relative;
             transform: translateY(50px) scale(0.9);
             transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        /* Scrollbar Cantik */
+        .letter-paper::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .letter-paper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .letter-paper::-webkit-scrollbar-thumb {
+            background-color: var(--accent-color);
+            border-radius: 10px;
+            opacity: 0.5;
         }
 
         .modal-overlay.active .letter-paper {
@@ -692,12 +709,17 @@
             <div class="letter-content">
                 <h3 class="italic">for you my special person,</h3>
                 <p>
-                    Hai kamu! Website kecil ini mungkin nggak seberapa dibandingin sama kehadiran kamu di hidup aku,
-                    tapi aku bikin ini biar kamu inget kalau kamu itu spesial banget.
+                    Halo kei cut,cute lebih tepatnya wkwk,untuk sekarang kita memang lagi asing, kita belum bisa saling
+                    ngerti,aku ga ngerti gimana kamu mau di cintai,
+                    kamu ga ngerti gimana aku cara aku cinta ke km, tapi yang pasti aku bukan ga sayang lagi ke kamu,
+                    tpi ak harap km tetap bisa semakin membaik ya berhenti ngepodnya ,makan nasi dan jangan keras kepala
+                    ya,
+
                 </p>
                 <p>
-                    Makasih ya udah jadi kamu. Makasih udah selalu ada, makasih buat senyum kamu yang nular, dan makasih
-                    udah ngasih warna pink lucu di hari-hariku yang kadang abu-abu.
+                    jujur, aku masi berharap kita baikan, tapi dengan kondisi kita saling memahami
+                    banyak yg mau ak bilang tpi aku ga yakin kamu bakal buka web ini lagi
+                    tpi klo semisal km uda liat dan baca ini, kasi tanda ya kalo km ngerasa hal yang sama
                 </p>
                 <p>
                     I hope you like this little surprise. Don't forget that you are loved, today and always.
@@ -713,12 +735,137 @@
                         <use href="#icon-heart" />
                     </svg>
                 </div>
+                <!-- CSS for Reply Button -->
+                <style>
+                    .reply-section {
+                        text-align: center;
+                        margin-top: 3rem;
+                        padding-top: 2rem;
+                        border-top: 1px dashed rgba(0, 0, 0, 0.1);
+                    }
+
+                    .reply-btn {
+                        display: inline-block;
+                        padding: 12px 35px;
+                        background: var(--accent-color);
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 50px;
+                        font-size: 0.9rem;
+                        letter-spacing: 1px;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 5px 15px rgba(205, 145, 158, 0.4);
+                        font-family: 'Quicksand', sans-serif;
+                        margin-top: 15px;
+                        border: none;
+                        cursor: pointer;
+                    }
+
+                    .reply-btn:hover {
+                        transform: translateY(-3px);
+                        box-shadow: 0 8px 25px rgba(205, 145, 158, 0.6);
+                        background: #c07a89;
+                    }
+                </style>
+
+                <div class="reply-section">
+                    <p style="font-size: 0.8rem; color: #999; margin-bottom: 5px; font-style: italic;">
+                        Sentuh tombol ini biar aku tau kamu baca...
+                    </p>
+                    <button onclick="sendReply(this)" class="reply-btn">
+                        Ya, aku juga sama
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Script -->
     <script>
+        async function sendReply(btn) {
+            // --- KONFIGURASI ---
+            // 1. Buka https://formspree.io/ dan daftar GRATIS.
+            // 2. Buat "New Form", kasih nama bebas (misal: "Kei Reply").
+            // 3. Copy "Endpoint" URL yang dikasih (formatnya: https://formspree.io/f/xxxxxx).
+            // 4. Paste URL-nya di bawah ini menggantikan teks "PASTE_URL_FORMSPREE_DISINI".
+            const formEndpoint = "https://formspree.io/f/mojjvynw";
+            // -------------------
+
+            // Ubah tampilan tombol saat proses
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "Mengirim...";
+            btn.style.opacity = "0.7";
+            btn.style.pointerEvents = "none";
+
+            // Kirim data diam-diam
+            try {
+                // Cek apakah URL sudah diganti
+                if (formEndpoint === "PASTE_URL_FORMSPREE_DISINI") {
+                    console.warn("⚠️ ALERTA: Kamu belum memasukkan URL Formspree! Pesan tidak akan terkirim ke emailmu.");
+                    // Tetap lanjutkan animasi sukses agar vibes-nya tidak rusak di mata dia
+                    throw new Error("URL belum diset");
+                }
+
+                await fetch(formEndpoint, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        message: "Seseorang menekan tombol 'Ya, aku juga sama'",
+                        date: new Date().toLocaleString()
+                    }),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+            } catch (error) {
+                console.log("Note: Pesan tersimpan secara visual saja (atau gagal kirim).");
+            }
+
+            // Sukses Visual (Animasi Hati)
+            btn.innerHTML = "Terkirim ❤️";
+            btn.style.background = "#8FB3A3"; /* Soft Green */
+            btn.style.opacity = "1";
+
+            // Create heart explosion effect
+            createHearts(btn);
+        }
+
+        function createHearts(element) {
+            const rect = element.getBoundingClientRect();
+            const center = {
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2
+            };
+
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = '❤️';
+                    heart.style.position = 'fixed';
+                    heart.style.left = center.x + 'px';
+                    heart.style.top = center.y + 'px';
+                    heart.style.fontSize = '20px';
+                    heart.style.pointerEvents = 'none';
+                    heart.style.transition = 'all 1s ease-out';
+                    heart.style.zIndex = '10001';
+                    document.body.appendChild(heart);
+
+                    // Random direction
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = 50 + Math.random() * 100;
+                    const tx = Math.cos(angle) * velocity;
+                    const ty = Math.sin(angle) * velocity - 50; // Tend upwards
+
+                    requestAnimationFrame(() => {
+                        heart.style.transform = `translate(${tx}px, ${ty}px) scale(0)`;
+                        heart.style.opacity = '0';
+                    });
+
+                    setTimeout(() => heart.remove(), 1000);
+                }, i * 50);
+            }
+        }
+
         const modal = document.getElementById('letterModal');
         const bgMusic = document.getElementById('bgMusic');
         let isMusicPlaying = false;
